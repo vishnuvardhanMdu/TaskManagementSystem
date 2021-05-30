@@ -7,7 +7,6 @@ package taskmanagementsystem;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
@@ -20,32 +19,68 @@ public class Task {
 
     User currentUser;
     Scanner ip;
-    private String taskName, taskDescription;
-    private String taskOwner, assignedTo;
-    private int taskCompletedLevel;
-    private Date taskStartDate, taskDueDate, taskCompletionDate;
-    private Category taskCategory;
-    private Priority taskPriority;
-    private Status taskStatus;
-    private enum Category {
-        PLANNING, DEFINING_REQUIREMENT, DESIGNING, DEVELOPING, TESTING, DEPLOYING, MAINTAINING
+    public String taskName, taskDescription;
+    public String taskOwner, assignedTo;
+    public int taskCompletedLevel;
+    public Date taskDueDate;
+    public Date taskStartDate, taskCompletionDate;
+    public Category taskCategory;
+    public Priority taskPriority;
+    public State taskState;
+
+    public enum Category {
+        PLANNING(1), DEFINING_REQUIREMENT(2), DESIGNING(3), DEVELOPING(4), TESTING(5), DEPLOYING(6), MAINTAINING(7);
+
+        private final int order;
+
+        private Category(int order) {
+            this.order = order;
+        }
+
+        public int getOrder() {
+            return this.order;
+        }
+
     };
 
-    private enum Priority {
-        VERY_HIGH, HIGH, MEDIUM, LOW
+    public enum Priority {
+        VERY_HIGH(4), HIGH(3), MEDIUM(2), LOW(1);
+
+        private final int value;
+
+        private Priority(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
+
     };
 
-    private enum Status {
-        INACTIVE, READY, ASSIGNED, PAUSED, VERIFIED, EXPIRED, TERMINATED, FAILED, FORWARDED, FINISHED, COMPLETED
+    public enum State {
+//        INACTIVE(1), READY(2), ASSIGNED(3), PAUSED(4), VERIFIED(5), EXPIRED(6), TERMINATED(7), FAILED(8), FORWARDED(9), FINISHED(10), COMPLETED(11);
+        INACTIVE(1), READY(2), ASSIGNED(3), PAUSED(4), FINISHED(5), FAILED(6), FORWARDED(7), TERMINATED(8), EXPIRED(9), COMPLETED(10);
+
+        private final int order;
+
+        private State(int order) {
+            this.order = order;
+        }
+
+        public int getOrder() {
+            return this.order;
+        }
+
     };
-    private final ArrayList<Task> taskList = new ArrayList<>();
+    private final static ArrayList<Task> taskList = new ArrayList<>();
 
     public Task(User currentUser, Scanner ip) {
         this.currentUser = currentUser;
         this.ip = ip;
     }
 
-    public Task(String taskName, String taskDescription, String taskOwner, String assignedTo, int taskCompletedLevel, Date taskStartDate, Date taskDueDate, Date taskCompletionDate, Category taskCategory, Priority taskPriority, Status taskStatus) {
+    public Task(String taskName, String taskDescription, String taskOwner, String assignedTo, int taskCompletedLevel, Date taskStartDate, Date taskDueDate, Date taskCompletionDate, Category taskCategory, Priority taskPriority, State taskStatus) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskOwner = taskOwner;
@@ -56,88 +91,94 @@ public class Task {
         this.taskCompletionDate = taskCompletionDate;
         this.taskCategory = taskCategory;
         this.taskPriority = taskPriority;
-        this.taskStatus = taskStatus;
+        this.taskState = taskStatus;
     }
 
-    public void createTask() {
-
-        System.out.println("Enter Task Name :");
-        ip.nextLine();
-        taskName = ip.nextLine();
-
-        System.out.println("Enter Task Description:");
-        taskDescription = ip.nextLine();
-
-        int listNumber = 1;
-        for (Category categoryName : Category.values()) {
-            System.out.println((listNumber++) + ". " + categoryName);
-        }
-        int categoryNumber;
-        do {
-            System.out.println("Enter category number:");
-            categoryNumber = ip.nextInt();
-        } while (getCategory(categoryNumber) == null);
-        taskCategory = getCategory(categoryNumber);
-
-        listNumber = 1;
-        for (Priority priorityName : Priority.values()) {
-            System.out.println((listNumber++) + ". " + priorityName);
-        }
-        int priorityNumber;
-        do {
-            System.out.println("Enter priority number:");
-            priorityNumber = ip.nextInt();
-        } while (getPriority(priorityNumber) == null);
-        taskPriority = getPriority(priorityNumber);
+    public void createNewTask() {
+        System.out.println("---------------------------------------------------\n");
+        System.out.println("Enter task details ");
+        taskName = getTaskInput("Task Name");
+        taskDescription = getTaskInput("Task Description");
+        taskCategory = getTaskCategory();
+        taskPriority = getTaskPriority();
 
         System.out.println("Do you want to assign task \n1. YES\n2. NO");
         char assignTaskOwnerInterest = ip.next().charAt(0);
         if (assignTaskOwnerInterest == '1') {
-            currentUser.printOtherUsers(currentUser.userEmail);
-            String userAssignedEmail;
-            System.out.println("Task assigned to ");
-            do {
-                System.out.print("Enter user email ");
-                ip.nextLine();
-                userAssignedEmail = ip.nextLine();
-            } while (!currentUser.emailExists(userAssignedEmail));
-            assignedTo = userAssignedEmail;
-            taskStatus = Status.ASSIGNED;
+            assignedTo = assignTask();
+            taskState = State.ASSIGNED;
         } else {
             assignedTo = null;
-            taskStatus = Status.INACTIVE;
+            taskState = State.INACTIVE;
         }
-
         taskOwner = currentUser.userEmail;
         taskCompletedLevel = 0;
+        taskStartDate = getDateInput("Start Date");
+        taskDueDate = getDateInput("Due Date");
 
-        boolean vaidDate;
-        do {
-            try {
-                System.out.print("Enter task due date(dd/MM/yyyy) ");
-                String dueDate = ip.nextLine();
-                taskDueDate = new SimpleDateFormat("dd/MM/yyyy").parse(dueDate);
+        Task newTask = new Task(taskName, taskDescription, taskOwner, assignedTo, taskCompletedLevel, taskStartDate, taskDueDate, taskCompletionDate, taskCategory, taskPriority, taskState);
+        taskList.add(newTask);
+        currentUser.addTask(newTask);
 
-                vaidDate = true;
-            } catch (ParseException e) {
-                System.out.println("Invalid data input ");
-                vaidDate = false;
+        if (assignedTo != null) {
+            User assignedUser = currentUser.getUser(assignedTo);
+            if (assignedUser != null) {
+                assignedUser.addAssignedTask(newTask);
             }
-        } while (!vaidDate);
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            taskStartDate = new SimpleDateFormat("dd/MM/yyyy  HH:mm:ss").parse(String.valueOf(now));
-
-        } catch (ParseException e) {
         }
-        
-        taskList.add(new Task(taskName, taskDescription, taskOwner, assignedTo, taskCompletedLevel, taskStartDate, taskDueDate, taskCompletionDate, taskCategory, taskPriority,taskStatus));
-        System.out.println(taskName+" created successfully :) ");
+
+        System.out.println(taskName + " created successfully :) ");
+        System.out.println("---------------------------------------------------\n");
+
+    }
+
+    public void copyTask() {
+        if (currentUser.userTaskList.isEmpty()) {
+            System.err.println("No existing task");
+            return;
+        }
+
+        Task oldTask = getOwnTask();
+
+        taskName = getTaskInput("Task Name");
+
+        taskDescription = getTaskInput("Task Description");;
+        taskCategory = oldTask.taskCategory;
+        taskPriority = oldTask.taskPriority;
+
+        System.out.println("Do you want to assign task \n1. YES\n2. NO");
+        char assignTaskOwnerInterest = ip.next().charAt(0);
+
+        if (assignTaskOwnerInterest == '1') {
+            assignedTo = assignTask();
+            taskState = State.ASSIGNED;
+        } else {
+            assignedTo = null;
+            taskState = State.INACTIVE;
+        }
+        taskCompletedLevel = 0;
+        taskOwner = currentUser.userEmail;
+        taskStartDate = getDateInput("Start Date");
+        taskDueDate = getDateInput("Due Date");
+
+        Task newTask = new Task(taskName, taskDescription, taskOwner, assignedTo, taskCompletedLevel, taskStartDate, taskDueDate, taskCompletionDate, taskCategory, taskPriority, taskState);
+        taskList.add(newTask);
+        currentUser.addTask(newTask);
+
+        if (assignedTo != null) {
+            User assignedUser = currentUser.getUser(assignedTo);
+            if (assignedUser != null) {
+                assignedUser.addAssignedTask(newTask);
+            }
+        }
+
+        System.out.println(taskName + " created successfully :) ");
     }
 
     private Category getCategory(int categoryNumber) {
 
         switch (categoryNumber) {
+
             case 1 -> {
                 return Category.PLANNING;
             }
@@ -186,4 +227,136 @@ public class Task {
         }
     }
 
+    public static State getState(int stateNumber) {
+        switch (stateNumber) {
+            case 1 -> {
+                return State.READY;
+            }
+            case 2 -> {
+                return State.PAUSED;
+            }
+            case 3 -> {
+                return State.FINISHED;
+            }
+            case 4 -> {
+                return State.FAILED;
+            }
+            case 5 -> {
+                return State.TERMINATED;
+            }
+            case 6 -> {
+                return State.EXPIRED;
+            }
+            case 7 -> {
+                return State.COMPLETED;
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
+
+    public static void printAllUserTask() {
+        taskList.forEach(task -> {
+            System.out.println(task.taskName);
+        });
+    }
+
+    private String getTaskInput(String inputString) {
+        System.out.println("Enter " + inputString + " :");
+        ip.nextLine();
+        return ip.nextLine();
+    }
+
+    private Category getTaskCategory() {
+        int listNumber = 1;
+        System.out.println("Category list");
+
+        for (Category categoryName : Category.values()) {
+            System.out.println((listNumber++) + ". " + categoryName);
+        }
+        int categoryNumber;
+        do {
+            System.out.println("Enter category number:");
+            categoryNumber = ip.nextInt();
+        } while (getCategory(categoryNumber) == null);
+        return getCategory(categoryNumber);
+    }
+
+    private Priority getTaskPriority() {
+        int listNumber = 1;
+        System.out.println("Priority list");
+        for (Priority priorityName : Priority.values()) {
+            System.out.println((listNumber++) + ". " + priorityName);
+        }
+        int priorityNumber;
+        do {
+            System.out.println("Enter priority number:");
+            priorityNumber = ip.nextInt();
+        } while (getPriority(priorityNumber) == null);
+        return getPriority(priorityNumber);
+    }
+
+    public String assignTask() {
+        User.printUsers();
+        String userAssignedEmail;
+        System.out.println("Task assigned to ");
+        do {
+            System.out.print("Enter user email ");
+            ip.nextLine();
+            userAssignedEmail = ip.nextLine();
+        } while (!currentUser.emailExists(userAssignedEmail));
+        return userAssignedEmail;
+    }
+
+    private Date getDateInput(String dateType) {
+        boolean vaidDate;
+        Date date = null;
+        do {
+            try {
+                System.out.println("Enter task " + dateType + "(dd/MM/yyyy) ");
+                String startDate = ip.next();
+                date = new SimpleDateFormat("dd/MM/yyyy").parse(startDate);
+                vaidDate = true;
+            } catch (ParseException e) {
+                System.out.println("Invalid data input ");
+                vaidDate = false;
+            }
+        } while (!vaidDate);
+
+        return date;
+    }
+
+    public Task getOwnTask() {
+
+        DisplayUserTask displayUserTask = new DisplayUserTask(ip, currentUser);
+        final String OWN_TASK = "ownTask";
+        displayUserTask.displayAllTask(OWN_TASK);
+        return getTask(OWN_TASK);
+    }
+
+    public Task getTask(String taskType) {
+        int taskNumber;
+        do {
+            System.out.println("Enter task number");
+            taskNumber = ip.nextInt();
+        } while (currentUser.getUserTask(taskNumber, taskType) == null);
+
+        return currentUser.getUserTask(taskNumber, taskType);
+
+    }
+
+    public State updateTaskState() {
+        int listNumber = 1;
+        System.out.println("Task States");
+        for (State stateName : State.values()) {
+            System.out.println((listNumber++) + ". " + stateName);
+        }
+        int stateNumber;
+        do {
+            System.out.println("Enter state number:");
+            stateNumber = ip.nextInt();
+        } while (getPriority(stateNumber) == null);
+        return getState(stateNumber);
+    }
 }
