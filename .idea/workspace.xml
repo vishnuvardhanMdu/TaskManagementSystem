@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="67ac9d79-9e3a-4f4c-a361-4be28789bde6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/build/built-jar.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/built-jar.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/DisplayUserTask.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/DisplayUserTask.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Login.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Login.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/SignUp.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/SignUp.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Task$Category.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Task$Category.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Task$Priority.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Task$Priority.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Task$State.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Task$State.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Task.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/Task.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/TaskDueDateComparator.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/TaskDueDateComparator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/TaskManagementSystem.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/TaskManagementSystem.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/TaskStateComparator.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/TaskStateComparator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/UpdateTask.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/UpdateTask.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/User.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/taskCategoryComparator.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/taskCategoryComparator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/taskmanagementsystem/taskPriorityComparator.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/taskmanagementsystem/taskPriorityComparator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbproject/private/private.xml" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/private/private.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/taskmanagementsystem/DisplayUserTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/taskmanagementsystem/DisplayTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/taskmanagementsystem/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/taskmanagementsystem/Login.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/taskmanagementsystem/SignUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/taskmanagementsystem/SignUp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/taskmanagementsystem/Task.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/taskmanagementsystem/Task.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/taskmanagementsystem/TaskManagementSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/taskmanagementsystem/TaskManagementSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/taskmanagementsystem/UpdateTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/taskmanagementsystem/UpdateTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/taskmanagementsystem/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/taskmanagementsystem/User.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="ProjectId" id="1tNbsgMTffAVFZKAZxMc8pNZaBD" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="67ac9d79-9e3a-4f4c-a361-4be28789bde6" name="Default Changelist" comment="" />
+      <created>1622612705915</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1622612705915</updated>
+      <workItem from="1622612706620" duration="18000" />
+    </task>
+    <servers />
+  </component>
+</project>

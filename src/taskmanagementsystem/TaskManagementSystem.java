@@ -21,12 +21,10 @@ public class TaskManagementSystem {
     static Scanner ip = new Scanner(System.in);
 
     public static void main(String[] args) {
-        TaskManagementSystem taskManagementSystem = new TaskManagementSystem();
         System.out.println("****** WELCOME TO TASK MANAGEMENT APP ******");
         char signInChoice;
         Application:
         do {
-//            User.printUsers();
 
             System.out.println("\na. SignIn\nb. SignUp\nQ. Close App");
             System.out.println("\n========================================\nEnter an option\n========================================");
@@ -35,16 +33,15 @@ public class TaskManagementSystem {
 
             switch (signInChoice) {
                 case 'a' -> {
-                    System.out.println("Current Useremail "+currentUser.userEmail);
                     char quitSignIn;
-                    Login login = new Login(currentUser, ip);
+                    Login login = new Login();
                     do {
-                        User user = login.signIn();
+                        User user = login.signIn(ip);
                         if (user == null) {
                             System.err.println("Incorrect username or password");
                         } else {
                             System.out.println("\nLogged in successfully :) \n");
-                            taskManagementSystem.taskManagementApp(user);
+                            taskManagementApp(user);
                         }
                         System.out.println("Do you want to quit SignIn\nIf YES press 'Q' else press 'N' ");
                         quitSignIn = ip.next().charAt(0);
@@ -52,14 +49,11 @@ public class TaskManagementSystem {
 
                 }
                 case 'b' -> {
-//                    SignUp signUp = new SignUp(currentUser, ip);
                     SignUp signUp = new SignUp();
-
                     signUp.newSignUp(ip);
 
                 }
                 case 'Q' -> {
-
                     break Application;
                 }
                 default ->
@@ -69,7 +63,7 @@ public class TaskManagementSystem {
 
     }
 
-    public void taskManagementApp(User user) {
+    public static void taskManagementApp(User user) {
 
         System.out.println("WELCOME " + user.userName + " !!! ");
         char userChoice;
@@ -81,25 +75,23 @@ public class TaskManagementSystem {
 
             switch (userChoice) {
                 case '1' -> {
-                    Task task = new Task(user, ip);
+                    CreateTask newTask = new CreateTask();
                     System.out.println("\n1. Create new task\n2. Copy exisiting task");
                     char createTaskType = ip.next().charAt(0);
                     if (createTaskType == '1') {
-                        task.createNewTask();
+                        newTask.createNewTask(user, ip);
                     } else if (createTaskType == '2') {
-                        task.copyTask();
-
+                        newTask.copyTask(user, ip);
                     }
                 }
                 case '2' -> {
-                    DisplayUserTask displayUserTask = new DisplayUserTask(ip, user);
-                    displayUserTask.displayTask();
+                    DisplayTask displayUserTask = new DisplayTask();
+                    displayUserTask.displayTask(user, ip);
                 }
 
                 case '3' -> {
-
-                    UpdateTask updateTask = new UpdateTask(user, ip);
-                    updateTask.updateOldTask();
+                    UpdateTask updateTask = new UpdateTask();
+                    updateTask.updateOldTask(user, ip);
                 }
 
                 case 'Q' -> {

@@ -13,20 +13,12 @@ import java.util.Scanner;
  */
 public class Login {
 
-    User currentUser;
-    Scanner ip;
-
-    public Login(User currentUser, Scanner ip) {
-        this.currentUser = currentUser;
-        this.ip = ip;
-    }
-
-    public User signIn() {
+    public User signIn(Scanner ip) {
         System.out.print("Enter Email : ");
         String userEmail = ip.next();
         System.out.print("Enter Password : ");
         String userPassword = ip.next();
-        return currentUser.checkSignIn(userEmail, userPassword);
+        return User.checkSignIn(userEmail, userPassword);
     }
 
 }

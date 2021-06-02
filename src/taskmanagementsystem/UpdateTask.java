@@ -13,23 +13,15 @@ import java.util.Scanner;
  */
 public class UpdateTask {
 
-    User currentUser;
-    Scanner ip;
+    public void updateOldTask(User currentUser, Scanner ip) {
 
-    public UpdateTask(User currentUser, Scanner ip) {
-        this.currentUser = currentUser;
-        this.ip = ip;
-    }
+        Task updateTask = Task.displayGetTask(currentUser, ip, Task.getTaskType(ip));
 
-    public void updateOldTask() {
-
-        Task task = new Task(currentUser, ip);
-        DisplayUserTask displayUserTask = new DisplayUserTask(ip, currentUser);
-        String taskType = displayUserTask.getTaskType();
-        if (!displayUserTask.displayAllTask(taskType)) {
+        if (updateTask == null) {
+            System.err.println("No existing task");
             return;
         }
-        Task updateTask = task.getTask(taskType);
+
         System.out.println("\n1. Assign/Forward Task\n2. Task State\n3. Task Completion Level\nQ. Logout");
         System.out.println("\n--------------------------------------\nEnter an option\n--------------------------------------");
         char taskAttribute = ip.next().charAt(0);
@@ -42,11 +34,11 @@ public class UpdateTask {
                     } else {
                         updateTask.taskState = Task.State.FORWARDED;
                     }
-                    updateTask.assignedTo = task.assignTask();
+                    updateTask.assignedTo = Task.assignTask(ip);
                     System.out.println("Task assigned/forwarded successfully");
 
                 } else {
-                    System.out.println("Only task owner can assign/forward task ");
+                    System.err.println("Only task owner can assign/forward task ");
                 }
 
             }
@@ -71,7 +63,7 @@ public class UpdateTask {
                     System.out.println("Task state updated successfully");
 
                 } else {
-                    System.out.println("Only task owner can update task state");
+                    System.err.println("Only task owner can update task state");
                 }
 
             }
@@ -91,7 +83,7 @@ public class UpdateTask {
                     updateTask.taskCompletedLevel = level;
                     System.out.println("Task level updated successfully");
                 } else {
-                    System.out.println("Only task assignie can update task level");
+                    System.err.println("Only task assignie can update task level");
                 }
             }
 
@@ -100,7 +92,7 @@ public class UpdateTask {
             }
 
             default ->
-                System.out.println("\nIncorrect input Try Again :( ");
+                System.err.println("\nIncorrect input Try Again :( ");
         }
     }
 

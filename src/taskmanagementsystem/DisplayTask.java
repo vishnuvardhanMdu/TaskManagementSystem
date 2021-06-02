@@ -16,64 +16,32 @@ import java.util.Scanner;
  *
  * @author Administrator
  */
-public class DisplayUserTask {
+public class DisplayTask {
 
-    Scanner ip;
-    User currentUser;
-    final String OWN_TASK = "ownTask";
-    final String ASSIGNED_TASK = "assignedTask";
+    public boolean displayAllTask(User currentUser, String taskType) {
 
-    public DisplayUserTask(Scanner ip, User currentUser) {
-        this.ip = ip;
-        this.currentUser = currentUser;
-    }
+        ArrayList<Task> filteredUserTaskList = getTaskMap(currentUser, taskType);
 
-    public boolean displayAllTask(String taskList) {
-
-        if (taskList.equals(OWN_TASK) && (!currentUser.userTaskList.isEmpty())) {
-            int taskNumber = 1;
-            System.out.println("----------------------------------------------------");
-
-            System.out.println("TaskNo. Task Name");
-            for (Task task : currentUser.userTaskList) {
-                System.out.println((taskNumber++) + ".      " + task.taskName);
-            }
-            System.out.println("----------------------------------------------------\n");
-
-        } else if (taskList.equals(ASSIGNED_TASK) && (!currentUser.userAssignedTaskList.isEmpty())) {
-            int taskNumber = 1;
-            System.out.println("----------------------------------------------------");
-
-            System.out.println("SNo. Task Name");
-            for (Task task : currentUser.userAssignedTaskList) {
-                System.out.println((taskNumber++) + ". " + task.taskName);
-            }
-            System.out.println("----------------------------------------------------\n");
-
-        } else {
+        if (filteredUserTaskList == null || filteredUserTaskList.isEmpty()) {
             System.out.println("No Task available");
             return false;
         }
+
+        System.out.println("TaskId.   Task Name");
+        filteredUserTaskList.forEach(
+                task -> System.out.println(task.taskId + ".     " + task.taskName));
+
         return true;
     }
 
-    public String getTaskType() {
-
-        char displayTaskType;
-        System.out.println("1. Owned Task\n2. Assigned Task");
-        displayTaskType = ip.next().charAt(0);
-        return (displayTaskType == '1') ? OWN_TASK : ASSIGNED_TASK;
-
-    }
-
-    public void displayTask() {
+    public void displayTask(User currentUser, Scanner ip) {
 
         final String BY_PRIORITY = "priority";
         final String BY_DUE_DATE = "dueDate";
         final String BY_CATEGORY = "category";
         final String BY_STATE = "state";
 
-        String taskList = getTaskType();
+        String taskType = Task.getTaskType(ip);
         char sortBy;
         System.out.println("View by\n1. Priority\n2. Due Date\n3. State\n4. Category\n5. View Task Details");
         sortBy = ip.next().charAt(0);
@@ -81,21 +49,21 @@ public class DisplayUserTask {
         switch (sortBy) {
 
             case '1' -> {
-                printTask(BY_PRIORITY, taskList);
+                displaySortedTask(currentUser, BY_PRIORITY, taskType);
             }
             case '2' -> {
-                printTask(BY_CATEGORY, taskList);
+                displaySortedTask(currentUser, BY_CATEGORY, taskType);
             }
             case '3' -> {
-                printTask(BY_STATE, taskList);
+                displaySortedTask(currentUser, BY_STATE, taskType);
             }
             case '4' -> {
-                printTask(BY_DUE_DATE, taskList);
+                displaySortedTask(currentUser, BY_DUE_DATE, taskType);
             }
 
             default -> {
-                if (displayAllTask(taskList)) {
-                    viewTask(taskList);
+                if (displayAllTask(currentUser, taskType)) {
+                    viewTaskDetails(currentUser, ip, taskType);
                 }
             }
 
@@ -103,19 +71,15 @@ public class DisplayUserTask {
 
     }
 
-    public void printTask(String filter, String taskList) {
-
+    public void displaySortedTask(User currentUser, String filter, String taskType) {
         final String BY_PRIORITY = "priority";
         final String BY_DUE_DATE = "dueDate";
         final String BY_CATEGORY = "category";
         final String BY_STATE = "state";
 
-        ArrayList<Task> filteredUserTaskList;
-        if (taskList.equals(OWN_TASK) && (!currentUser.userTaskList.isEmpty())) {
-            filteredUserTaskList = (ArrayList<Task>) currentUser.userTaskList.clone();
-        } else if (taskList.equals(ASSIGNED_TASK) && (!currentUser.userAssignedTaskList.isEmpty())) {
-            filteredUserTaskList = (ArrayList<Task>) currentUser.userAssignedTaskList.clone();
-        } else {
+        ArrayList<Task> filteredUserTaskList = getTaskMap(currentUser, taskType);
+
+        if (filteredUserTaskList == null || filteredUserTaskList.isEmpty()) {
             System.out.println("No Task available");
             return;
         }
@@ -149,9 +113,9 @@ public class DisplayUserTask {
 
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-        System.out.println("Task Name | Due Date | Priority | Category | State");
+        System.out.println("Task Id | Task Name | Due Date | Priority | Category | State");
         filteredUserTaskList.forEach(task -> {
-            System.out.println(task.taskName + "  |  " + dateFormat.format(task.taskDueDate)
+            System.out.println(task.taskId + "     |  " + task.taskName + "  |  " + dateFormat.format(task.taskDueDate)
                     + "  |  " + task.taskPriority
                     + "  |  " + task.taskCategory
                     + "  |  " + task.taskState
@@ -161,18 +125,18 @@ public class DisplayUserTask {
         System.out.println("----------------------------------------------------");
     }
 
-    public void viewTask(String taskList) {
-
-        int taskNumber;
+    private void viewTaskDetails(User currentUser, Scanner ip, String taskType) {
+        String taskId;
+        Task task;
         do {
-            System.out.println("Enter task number");
-            taskNumber = ip.nextInt();
-        } while (currentUser.getUserTask(taskNumber, taskList) == null);
-
-        Task task = currentUser.getUserTask(taskNumber, taskList);
+            System.out.println("Enter task id");
+            taskId = ip.next();
+            task = Task.getUserTask(taskId);
+        } while (task == null);
 
         System.out.println("TASK DETAILS");
 
+        System.out.println("Task Id              : " + task.taskId);
         System.out.println("Task Name            : " + task.taskName);
         System.out.println("Task Description     : " + task.taskDescription);
         System.out.println("Task Owner           : " + task.taskOwner);
@@ -186,6 +150,20 @@ public class DisplayUserTask {
         System.out.println("Task Start Date      : " + dateFormat.format(task.taskStartDate));
         System.out.println("Task Due Date        : " + dateFormat.format(task.taskDueDate));
         System.out.printf("Task Completed Date  : %s\n", (task.taskCompletionDate == null) ? "Not Completed" : dateFormat.format(task.taskCompletionDate));
+    }
+
+    private ArrayList<Task> getTaskMap(User currentUser, String taskType) {
+        final String OWN_TASK = "ownTask";
+        final String ASSIGNED_TASK = "assignedTask";
+        if (taskType.equals(OWN_TASK)) {
+            return (ArrayList<Task>) Task.getUserTaskMap(currentUser, OWN_TASK);
+        } else {
+            if (taskType.endsWith(ASSIGNED_TASK)) {
+                return (ArrayList<Task>) Task.getUserTaskMap(currentUser, ASSIGNED_TASK);
+            }
+        }
+
+        return null;
     }
 
 }
@@ -245,5 +223,4 @@ class TaskDueDateComparator implements Comparator<Task> {
             return 0;
         }
     }
-
 }
