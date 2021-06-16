@@ -18,7 +18,13 @@ public class Login {
         String userEmail = ip.next();
         System.out.print("Enter Password : ");
         String userPassword = ip.next();
-        return User.checkSignIn(userEmail, userPassword);
+        User user = User.checkSignIn(userEmail, userPassword);
+        if (user == null) {
+            System.err.println("Incorrect username or password");
+        } else {
+            System.out.println("\nLogged in successfully :) \n");
+        }
+        return user;
     }
 
 }
