@@ -5,11 +5,10 @@
  */
 package taskmanagementsystem;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**
@@ -18,16 +17,15 @@ import java.util.stream.Collectors;
  */
 public class Task {
 
-    public String taskName, taskDescription, taskId;
-    public String taskOwner, assignedTo;
-    public int taskCompletedLevel;
-    public Date taskDueDate;
-    public Date taskStartDate, taskCompletionDate;
-    public Category taskCategory;
-    public Priority taskPriority;
-    public State taskState;
+    private String taskName, taskDescription, assignedTo;
+    final private String taskOwner, taskId;
+    private int taskCompletedLevel;
+    private Date taskDueDate, taskStartDate, taskCompletionDate;
+    private Category taskCategory;
+    private Priority taskPriority;
+    private State taskState;
     private final static Map<String, Task> taskList = new HashMap<>();
-    public static int taskCount = 1;
+    private static int taskCount = 1;
 
     public enum Category {
         PLANNING(1), DEFINING_REQUIREMENT(2), DESIGNING(3), DEVELOPING(4), TESTING(5), DEPLOYING(6), MAINTAINING(7);
@@ -89,6 +87,95 @@ public class Task {
         this.taskState = taskStatus;
     }
 
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public String getTaskDescription() {
+        return taskDescription;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public String getTaskOwner() {
+        return taskOwner;
+    }
+
+    public String getAssignedTo() {
+        return assignedTo;
+    }
+
+    public int getTaskCompletedLevel() {
+        return taskCompletedLevel;
+    }
+
+    public Date getTaskDueDate() {
+        return taskDueDate;
+    }
+
+    public Date getTaskStartDate() {
+        return taskStartDate;
+    }
+
+    public Date getTaskCompletionDate() {
+        return taskCompletionDate;
+    }
+
+    public Category getTaskCategory() {
+        return taskCategory;
+    }
+
+    public Priority getTaskPriority() {
+        return taskPriority;
+    }
+
+    public State getTaskState() {
+        return taskState;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+    public void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public void setTaskCompletedLevel(int taskCompletedLevel) {
+        this.taskCompletedLevel = taskCompletedLevel;
+    }
+
+    public void setTaskDueDate(Date taskDueDate) {
+        this.taskDueDate = taskDueDate;
+    }
+
+    public void setTaskStartDate(Date taskStartDate) {
+        this.taskStartDate = taskStartDate;
+    }
+
+    public void setTaskCompletionDate(Date taskCompletionDate) {
+        this.taskCompletionDate = taskCompletionDate;
+    }
+
+    public void setTaskCategory(Category taskCategory) {
+        this.taskCategory = taskCategory;
+    }
+
+    public void setTaskPriority(Priority taskPriority) {
+        this.taskPriority = taskPriority;
+    }
+
+    public void setTaskState(State taskState) {
+        this.taskState = taskState;
+    }
+
+    
     public static State getState(int stateNumber) {
         switch (stateNumber) {
             case 1 -> {
@@ -122,52 +209,80 @@ public class Task {
         taskList.put(taskId, task);
     }
 
-    public static Task getTask(Scanner ip) {
+    public static Task getTask(User currentUser, String taskType) {
         String taskId;
         Task task;
+        boolean invalidTaskId;
         do {
+            invalidTaskId = false;
             System.out.println("Enter task id");
-            taskId = ip.next();
+            taskId = TaskManagementSystem.ip.next();
             task = Task.getUserTask(taskId);
-        } while (task == null);
-
+            if (task == null || (taskType.equals("ownTask") && !task.taskOwner.equals(currentUser.getUserEmail()))
+                    || (taskType.equals("assignedTask") && !task.assignedTo.equals(currentUser.getUserEmail()))) {
+                invalidTaskId = true;
+                System.err.println("Invalid task Id");
+            }
+        } while (invalidTaskId);
         return task;
     }
 
-    public static String assignTask(Scanner ip) {
+    public static String assignTask() {
         User.printUsers();
-        String userAssignedEmail;
+        String assignedUserId;
+        boolean incorrectUser;
         System.out.println("Task assigned to ");
         do {
-            System.out.print("Enter user email ");
-            ip.nextLine();
-            userAssignedEmail = ip.nextLine();
-        } while (!User.emailExists(userAssignedEmail));
-        return userAssignedEmail;
+            incorrectUser = false;
+            System.out.print("Enter user id ");
+            TaskManagementSystem.ip.nextLine();
+            assignedUserId = TaskManagementSystem.ip.nextLine();
+            if (!User.userIdExists(assignedUserId)) {
+                incorrectUser = true;
+                System.err.println("Incorrect user email");
+            }
+        } while (incorrectUser);
+        return User.getUser(assignedUserId);
     }
 
-    public static String getTaskType(Scanner ip) {
-        final String OWN_TASK = "ownTask";
-        final String ASSIGNED_TASK = "assignedTask";
+    public static String getTaskType() {
         char displayTaskType;
         System.out.println("1. Owned Task\n2. Assigned Task");
-        displayTaskType = ip.next().charAt(0);
-        return (displayTaskType == '1') ? OWN_TASK : ASSIGNED_TASK;
+        displayTaskType = TaskManagementSystem.ip.next().charAt(0);
+        return (displayTaskType == '1') ? "ownTask" : "assignedTask";
 
     }
 
-    public static List<Task> getUserTaskMap(User currentUser, String taskType) {
-        final String OWN_TASK = "ownTask";
+    public static ArrayList<Task> getUserTaskMap(User currentUser, String taskType) {
 
-        if (taskType.endsWith(OWN_TASK)) {
-            return taskList.values().stream()
-                    .filter(task -> task.taskOwner.equals(currentUser.userEmail))
-                    .collect(Collectors.toList());
+//        if (taskType.equals("ownTask")) {
+//            
+//            return taskList.values().stream()
+//                    .filter(task -> task.taskOwner.equals(currentUser.userEmail))
+//                    .collect(Collectors.toList());
+//        } else {
+//            return taskList.values().stream()
+//                    .filter(task -> task.assignedTo != null && task.assignedTo.equals(currentUser.userEmail))
+//                    .collect(Collectors.toList());
+//        }
+//        
+        ArrayList<Task> list = new ArrayList<>();
+
+        if (taskType.equals("ownTask")) {
+            for (Task task : taskList.values()) {
+                if (task.taskOwner.equals(currentUser.getUserEmail())) {
+                    list.add(task);
+                }
+            }
         } else {
-            return taskList.values().stream()
-                    .filter(task -> task.assignedTo != null && task.assignedTo.equals(currentUser.userEmail))
-                    .collect(Collectors.toList());
+            for (Task task : taskList.values()) {
+                if (task.assignedTo != null && task.assignedTo.equals(currentUser.getUserEmail())) {
+                    list.add(task);
+                }
+            }
         }
+
+        return list;
 
     }
 
@@ -179,23 +294,23 @@ public class Task {
         return taskCount++;
     }
 
-    public static Task displayGetTask(User currentUser, Scanner ip, String taskType) {
-        DisplayTask displayUserTask = new DisplayTask();
-        final String OWN_TASK = "ownTask";
-        final String ASSIGNED_TASK = "assignedTask";
+    public static Task displayAndGetTask(User currentUser, String taskType) {
 
         boolean taskExist;
-        if (taskType.equals(OWN_TASK)) {
-            taskExist = displayUserTask.displayAllTask(currentUser, OWN_TASK);
+        if (taskType.equals("ownTask")) {
+            taskExist = TaskVisualization.displayAllTask(currentUser, "ownTask");
         } else {
-            taskExist = displayUserTask.displayAllTask(currentUser, ASSIGNED_TASK);
+            taskExist = TaskVisualization.displayAllTask(currentUser, "assignedTask");
         }
 
         if (taskExist) {
-            return Task.getTask(ip);
+            return Task.getTask(currentUser, taskType);
         } else {
             return null;
         }
     }
 
+    public static void deleteTask(String taskId) {
+        taskList.remove(taskId);
+    }
 }

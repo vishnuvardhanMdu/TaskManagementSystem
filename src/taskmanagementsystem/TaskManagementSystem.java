@@ -16,8 +16,6 @@ public class TaskManagementSystem {
     /**
      * @param args the command line arguments
      */
-    static User currentUser = new User();
-
     static Scanner ip = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -36,11 +34,8 @@ public class TaskManagementSystem {
                     char quitSignIn;
                     Login login = new Login();
                     do {
-                        User user = login.signIn(ip);
-                        if (user == null) {
-                            System.err.println("Incorrect username or password");
-                        } else {
-                            System.out.println("\nLogged in successfully :) \n");
+                        User user = login.signIn();
+                        if (user != null) {
                             taskManagementApp(user);
                         }
                         System.out.println("Do you want to quit SignIn\nIf YES press 'Q' else press 'N' ");
@@ -50,7 +45,8 @@ public class TaskManagementSystem {
                 }
                 case 'b' -> {
                     SignUp signUp = new SignUp();
-                    signUp.newSignUp(ip);
+//                    signUp.newSignUp(ip);
+                    signUp.generateSignUpList();
 
                 }
                 case 'Q' -> {
@@ -65,33 +61,34 @@ public class TaskManagementSystem {
 
     public static void taskManagementApp(User user) {
 
-        System.out.println("WELCOME " + user.userName + " !!! ");
+        System.out.println("WELCOME " + user.getUserName() + " !!! ");
         char userChoice;
         do {
-            System.out.println("\n1. Create Task\n2. Display Task\n3. Update Task\nQ. Logout");
+            System.out.println("\n1. Create Task\n2. Display Task\n3. Update Task\n4. Delete Task\nQ. Logout");
             System.out.println("\n========================================\nEnter an option\n========================================");
 
             userChoice = ip.next().charAt(0);
 
             switch (userChoice) {
                 case '1' -> {
-                    CreateTask newTask = new CreateTask();
                     System.out.println("\n1. Create new task\n2. Copy exisiting task");
                     char createTaskType = ip.next().charAt(0);
                     if (createTaskType == '1') {
-                        newTask.createNewTask(user, ip);
+                        TaskCreation.createNewTask(user);
                     } else if (createTaskType == '2') {
-                        newTask.copyTask(user, ip);
+                        TaskCreation.copyTask(user);
                     }
                 }
                 case '2' -> {
-                    DisplayTask displayUserTask = new DisplayTask();
-                    displayUserTask.displayTask(user, ip);
+                    TaskVisualization.displayTask(user);
                 }
 
                 case '3' -> {
-                    UpdateTask updateTask = new UpdateTask();
-                    updateTask.updateOldTask(user, ip);
+                    TaskUpdation.updateOldTask(user);
+                }
+
+                case '4' -> {
+                    TaskDeletion.deteleTask(user);
                 }
 
                 case 'Q' -> {

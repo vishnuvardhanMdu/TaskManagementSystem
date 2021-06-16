@@ -5,7 +5,6 @@
  */
 package taskmanagementsystem;
 
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,26 +14,37 @@ import java.util.regex.Pattern;
  */
 public class SignUp {
 
-    public void newSignUp(Scanner ip) {
+    public void generateSignUpList() {
+        User.addUser("Vishnu", "v@gmail.com", "123", "USR100");
+        User.addUser("Ram", "r@gmail.com", "123", "USR101");
+        User.addUser("Kumar", "k@gmail.com", "123", "USR102");
+        User.addUser("Aswin", "a@gmail.com", "123", "USR103");
+        User.addUser("Sasi", "s@gmail.com", "123", "USR104");
+        User.addUser("aaa", "a", "a", "USR105");
+        User.addUser("bbb", "b", "b", "USR106");
+
+    }
+
+    public void newSignUp() {
         final String INPUT_TYPE_USER_NAME = "Name";
         final String INPUT_TYPE_USER_EMAIL = "Email";
         final String INPUT_TYPE_USER_PASSWORD = "Password";
 
         System.out.println("We are glad to add you in our family... :) ");
-        String userName = getUserInput(INPUT_TYPE_USER_NAME, ip);
-        String userEmail = getUserInput(INPUT_TYPE_USER_EMAIL, ip);
-        String userPassword = getUserInput(INPUT_TYPE_USER_PASSWORD, ip);
-        verifyUserConfirmPassword(ip, userPassword);
-
-        User.addUser(userName, userEmail, userPassword);
+        String userName = getUserInput(INPUT_TYPE_USER_NAME);
+        String userEmail = getUserInput(INPUT_TYPE_USER_EMAIL);
+        String userPassword = getUserInput(INPUT_TYPE_USER_PASSWORD);
+        verifyUserConfirmPassword(userPassword);
+        String userId = generateUserId();
+        User.addUser(userName, userEmail, userPassword, userId);
         System.out.println("SignUp Success");
     }
 
-    public String getUserInput(String inputType, Scanner ip) {
+    public String getUserInput(String inputType) {
         String inputValue;
         do {
             System.out.print("Enter " + inputType + " : ");
-            inputValue = ip.next();
+            inputValue = TaskManagementSystem.ip.next();
         } while (!validateInput(inputValue, inputType));
 
         return inputValue;
@@ -92,11 +102,11 @@ public class SignUp {
         return true;
     }
 
-    public String verifyUserConfirmPassword(Scanner ip, String password) {
+    public String verifyUserConfirmPassword(String password) {
         String inputValue;
         do {
             System.out.print("Enter Confirm password : ");
-            inputValue = ip.next();
+            inputValue = TaskManagementSystem.ip.next();
         } while (!validateConfirmPassword(inputValue, password));
         return inputValue;
 
@@ -108,5 +118,9 @@ public class SignUp {
             return false;
         }
         return true;
+    }
+
+    public String generateUserId() {
+        return "USR" + User.getUserCount();
     }
 }

@@ -15,20 +15,27 @@ import java.util.Map;
  */
 public class User {
 
-    public String userName, userEmail, userPassword;
+    private String userName, userEmail, userPassword, userId;
+
     private static final Map<String, User> userMapDetails = new HashMap<>();
-
-    public User() {
-    }
-
-    public User(String userName, String userEmail, String userPassword) {
+    static int userCount=1;
+ 
+    public User(String userName, String userEmail, String userPassword, String userId) {
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
+        this.userId = userId;
     }
 
-    public static void addUser(String userName, String userEmail, String userPassword) {
-        User newUser = new User(userName, userEmail, userPassword);
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+    public static void addUser(String userName, String userEmail, String userPassword, String userId) {
+        User newUser = new User(userName, userEmail, userPassword, userId);
         userMapDetails.put(userEmail, newUser);
 
     }
@@ -44,25 +51,31 @@ public class User {
         return null;
     }
 
-    public static User getUser(String userEmail) {
-        if (userMapDetails.containsKey(userEmail)) {
-            return userMapDetails.get(userEmail);
+
+    public static boolean userIdExists(String userId) {
+        return userMapDetails.values().stream().anyMatch(user -> (user.userId.equals(userId)));
+    }
+   
+    public static String getUser(String userId) {
+        for (User user : userMapDetails.values()) {
+            if (user.userId.equals(userId)) {
+                return user.userEmail;
+            }
         }
         return null;
     }
 
-    public static boolean emailExists(String userEmail) {
-        return userMapDetails.containsKey(userEmail);
-    }
-
     public static void printUsers() {
         System.out.println("List of users...");
-        Iterator<String> itr = userMapDetails.keySet().iterator();
-        while (itr.hasNext()) {
-            System.out.println(itr.next());
-
+        Iterator<User> userIerator = userMapDetails.values().iterator();
+        while (userIerator.hasNext()) {
+            User currentUser = userIerator.next();
+            System.out.println(currentUser.userId+". "+currentUser.userName);
         }
         System.out.println();
     }
 
+    public static int getUserCount() {
+        return userCount++;
+    }
 }

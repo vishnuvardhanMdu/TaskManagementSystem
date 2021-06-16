@@ -8,45 +8,44 @@ package taskmanagementsystem;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 /**
  *
  * @author Administrator
  */
-public class CreateTask {
+public class TaskCreation {
 
-    public void createNewTask(User currentUser, Scanner ip) {
+    public static void createNewTask(User currentUser) {
         System.out.println("---------------------------------------------------\n");
         System.out.println("Enter task details ");
-        String taskName = getTaskInput("Task Name", ip);
-        String taskDescription = getTaskInput("Task Description", ip);
+        String taskName = getTaskDetails("Task Name");
+        String taskDescription = getTaskDetails("Task Description");
 
-        Task.Category taskCategory = getTaskCategory(ip);
-        Task.Priority taskPriority = getTaskPriority(ip);
+        Task.Category taskCategory = getTaskCategoryInput();
+        Task.Priority taskPriority = getTaskPriority();
 
         System.out.println("Do you want to assign task \n1. YES\n2. NO");
-        char assignTaskOwnerInterest = ip.next().charAt(0);
+        char assignTaskOwnerInterest = TaskManagementSystem.ip.next().charAt(0);
 
         String assignedTo;
         Task.State taskState;
         if (assignTaskOwnerInterest == '1') {
-            assignedTo = Task.assignTask(ip);
+            assignedTo = Task.assignTask();
             taskState = Task.State.ASSIGNED;
         } else {
             assignedTo = null;
             taskState = Task.State.INACTIVE;
         }
 
-        String taskOwner = currentUser.userEmail;
+        String taskOwner = currentUser.getUserEmail();
         int taskCompletedLevel = 0;
         Date taskStartDate, taskDueDate;
 
         boolean invalidDate;
         do {
             invalidDate = false;
-            taskStartDate = getDateInput("Start Date", ip);
-            taskDueDate = getDateInput("Due Date", ip);
+            taskStartDate = getDateInput("Start Date");
+            taskDueDate = getDateInput("Due Date");
             if (validateTaskDates(taskStartDate, taskDueDate)) {
                 System.err.println("Start date must be before the due date");
                 invalidDate = true;
@@ -54,54 +53,89 @@ public class CreateTask {
         } while (invalidDate);
 
         Date taskCompletionDate = null;
-        String taskId = generateTaskId(taskName);
+        String taskId = generateTaskId();
         Task newTask = new Task(taskName, taskDescription, taskId, taskOwner, assignedTo, taskCompletedLevel, taskStartDate, taskDueDate, taskCompletionDate, taskCategory, taskPriority, taskState);
         Task.addTask(taskId, newTask);
         System.out.println(taskName + " created successfully :) ");
 
     }
 
-    public void copyTask(User currentUser, Scanner ip) {
-        final String OWN_TASK = "ownTask";
+    public static void copyTask(User currentUser) {
 
-        Task oldTask = Task.displayGetTask(currentUser, ip, OWN_TASK);
+        Task oldTask = Task.displayAndGetTask(currentUser, "ownTask");
 
         if (oldTask == null) {
             System.err.println("No existing task");
             return;
         }
-        String taskName = getTaskInput("Task Name", ip);
-        String taskDescription = getTaskInput("Task Description", ip);
-        Task.Category taskCategory = oldTask.taskCategory;
-        Task.Priority taskPriority = oldTask.taskPriority;
 
-        System.out.println("Do you want to assign task \n1. YES\n2. NO");
-        char assignTaskOwnerInterest = ip.next().charAt(0);
-        String assignedTo;
-        Task.State taskState;
-        if (assignTaskOwnerInterest == '1') {
-            assignedTo = Task.assignTask(ip);
-            taskState = Task.State.ASSIGNED;
-        } else {
-            assignedTo = null;
-            taskState = Task.State.INACTIVE;
-        }
-        int taskCompletedLevel = 0;
-        String taskOwner = currentUser.userEmail;
+        String taskName = oldTask.getTaskName();
+        String taskDescription = oldTask.getTaskDescription();
+        Task.Category taskCategory = oldTask.getTaskCategory();
+        Task.Priority taskPriority = oldTask.getTaskPriority();
+        String assignedTo = oldTask.getAssignedTo();
+        Task.State taskState = oldTask.getTaskState();
+        Date taskStartDate = oldTask.getTaskStartDate();
+        Date taskDueDate = oldTask.getTaskDueDate();
 
-        Date taskStartDate;
-        Date taskDueDate;
-
+        TaskModification:
         do {
-            taskStartDate = getDateInput("Start Date", ip);
-            taskDueDate = getDateInput("Due Date", ip);
-            if (validateTaskDates(taskStartDate, taskDueDate)) {
-                System.err.println("Start date must be before the due date");
+            System.out.println("Select the details that you want to change from old task"
+                    + "\n1. Task Name \n2. Task Description\n3. Assign Task\n4. Task Start/Due Date"
+                    + "\n5. Task Category\n6. Task Priority\n7. Create task\n");
+            char userChoice = TaskManagementSystem.ip.next().charAt(0);
+            switch (userChoice) {
+
+                case '1' -> {
+                    taskName = getTaskDetails("Task Name");
+
+                }
+                case '2' -> {
+                    taskDescription = getTaskDetails("Task Description");
+                }
+                case '3' -> {
+                    System.out.println("Do you want to assign task \n1. YES\n2. NO");
+                    char assignTaskOwnerInterest = TaskManagementSystem.ip.next().charAt(0);
+                    if (assignTaskOwnerInterest == '1') {
+                        assignedTo = Task.assignTask();
+                        taskState = Task.State.ASSIGNED;
+                    } else {
+                        assignedTo = null;
+                        taskState = Task.State.INACTIVE;
+                    }
+                }
+                case '4' -> {
+                    do {
+                        taskStartDate = getDateInput("Start Date");
+                        taskDueDate = getDateInput("Due Date");
+                        if (validateTaskDates(taskStartDate, taskDueDate)) {
+                            System.err.println("Start date must be before the due date");
+                        }
+                    } while (validateTaskDates(taskStartDate, taskDueDate));
+                }
+                case '5' -> {
+                    taskCategory = getTaskCategoryInput();
+                }
+                case '6' -> {
+                    taskPriority = getTaskPriority();
+
+                }
+                case '7' -> {
+                    break TaskModification;
+                }
+
+                default ->
+                    System.err.println("\nIncorrect input Try Again :( ");
+
             }
-        } while (validateTaskDates(taskStartDate, taskDueDate));
+
+        } while (true);
+
+        int taskCompletedLevel = 0;
+        String taskOwner = currentUser.getUserEmail();
 
         Date taskCompletionDate = null;
-        String taskId = generateTaskId(taskName);
+        String taskId = generateTaskId();
 
         Task newTask = new Task(taskName, taskDescription, taskId, taskOwner, assignedTo, taskCompletedLevel, taskStartDate, taskDueDate, taskCompletionDate, taskCategory, taskPriority, taskState);
         Task.addTask(taskId, newTask);
@@ -109,13 +143,13 @@ public class CreateTask {
         System.out.println(taskName + " created successfully :) ");
     }
 
-    private String getTaskInput(String inputString, Scanner ip) {
+    public static String getTaskDetails(String inputString) {
         System.out.println("Enter " + inputString + " :");
-        ip.nextLine();
-        return ip.nextLine();
+        TaskManagementSystem.ip.nextLine();
+        return TaskManagementSystem.ip.nextLine();
     }
 
-    private Task.Category getTaskCategory(Scanner ip) {
+    public static Task.Category getTaskCategoryInput() {
         int listNumber = 1;
         System.out.println("Category list");
 
@@ -125,12 +159,12 @@ public class CreateTask {
         int categoryNumber;
         do {
             System.out.println("Enter category number:");
-            categoryNumber = ip.nextInt();
+            categoryNumber = TaskManagementSystem.ip.nextInt();
         } while (getCategory(categoryNumber) == null);
         return getCategory(categoryNumber);
     }
 
-    private Task.Category getCategory(int categoryNumber) {
+    public static Task.Category getCategory(int categoryNumber) {
 
         switch (categoryNumber) {
 
@@ -162,7 +196,7 @@ public class CreateTask {
         }
     }
 
-    private Task.Priority getPriority(int priorityNumber) {
+    public static Task.Priority getPriority(int priorityNumber) {
         switch (priorityNumber) {
             case 1 -> {
                 return Task.Priority.VERY_HIGH;
@@ -182,7 +216,7 @@ public class CreateTask {
         }
     }
 
-    private Task.Priority getTaskPriority(Scanner ip) {
+    public static Task.Priority getTaskPriority() {
         int listNumber = 1;
         System.out.println("Priority list");
         for (Task.Priority priorityName : Task.Priority.values()) {
@@ -191,19 +225,19 @@ public class CreateTask {
         int priorityNumber;
         do {
             System.out.println("Enter priority number:");
-            priorityNumber = ip.nextInt();
+            priorityNumber = TaskManagementSystem.ip.nextInt();
         } while (getPriority(priorityNumber) == null);
         return getPriority(priorityNumber);
     }
 
-    private Date getDateInput(String dateType, Scanner ip) {
+    public static Date getDateInput(String dateType) {
         boolean vaidDate;
         Date date = null;
 
         do {
             System.out.println("Enter task " + dateType + "(dd/MM/yyyy) ");
             try {
-                String startDate = ip.next();
+                String startDate = TaskManagementSystem.ip.next();
                 date = new SimpleDateFormat("dd/MM/yyyy").parse(startDate);
                 vaidDate = true;
             } catch (ParseException e) {
@@ -215,12 +249,11 @@ public class CreateTask {
         return date;
     }
 
-    private boolean validateTaskDates(Date date1, Date date2) {
+    public static boolean validateTaskDates(Date date1, Date date2) {
         return date1.compareTo(date2) > 0;
     }
 
-    public String generateTaskId(String taskName) {
-        return taskName.substring(0, 2).toUpperCase() + String.valueOf(Task.gettaskCount());
+    static String generateTaskId() {
+        return "TK" + String.valueOf(Task.gettaskCount());
     }
-
 }

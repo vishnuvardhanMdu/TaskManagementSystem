@@ -5,7 +5,7 @@
  */
 package taskmanagementsystem;
 
-import java.util.Scanner;
+
 
 /**
  *
@@ -13,11 +13,11 @@ import java.util.Scanner;
  */
 public class Login {
 
-    public User signIn(Scanner ip) {
+    public User signIn() {
         System.out.print("Enter Email : ");
-        String userEmail = ip.next();
+        String userEmail = TaskManagementSystem.ip.next();
         System.out.print("Enter Password : ");
-        String userPassword = ip.next();
+        String userPassword = TaskManagementSystem.ip.next();
         User user = User.checkSignIn(userEmail, userPassword);
         if (user == null) {
             System.err.println("Incorrect username or password");
