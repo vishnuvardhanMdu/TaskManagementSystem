@@ -17,7 +17,7 @@ Clone the repo and open the folder as project in Netbeans IDE.
  5. View task details
  6. Visualize task based on deadline, state, completion, priority
  
-For more details, view project functionality document.
+For more details, view [project functionality document](https://github.com/vishnuvardhanMdu/TaskManagementSystem/blob/main/TASK%20MANAGEMENT%20APP%20-%20Project%20Functionality.pdf).
 
 
 ## Setup
